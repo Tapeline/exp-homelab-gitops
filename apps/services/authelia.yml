@@ -14,7 +14,7 @@ spec:
       targetRevision: 0.11.6
       helm:
         valueFiles:
-          - $values/config/services/authelia/values.yaml
+          - $values/config/services/authelia/values.yml
     - repoURL: 'https://github.com/Tapeline/exp-homelab-gitops.git'
       targetRevision: main
       ref: values

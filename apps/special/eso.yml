@@ -1,17 +1,27 @@
-apiVersion: external-secrets.iov1beta1
-kind: ClusterSecretStore
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
-  name: vault-backend
+  name: external-secrets-operator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
-  provider:
-    vault:
-      server: "https://secrets.tapeline.dev"
-      path: "secret"
-      version: "v2"
-      auth:
-        kubernetes:
-          mountPath: "kubernetes"
-          role: "eso-role"
-          serviceAccountRef:
-            name: "external-secrets"
-            namespace: "external-secrets"
+  project: default
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-secrets
+  sources:
+    - repoURL: 'https://charts.external-secrets.io'
+      chart: external-secrets
+      targetRevision: 2.8.0
+      helm:
+        valueFiles:
+          - $values/config/special/eso/values.yml
+    - repoURL: 'https://github.com/Tapeline/exp-homelab-gitops.git'
+      targetRevision: master
+      ref: values
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
