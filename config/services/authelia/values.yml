@@ -1,0 +1,30 @@
+configMap:
+  default_redirection_url: https://id.x.tapeline.dev
+  authentication_backend:
+    file:
+      path: /config/users_database.yml
+  identity_providers:
+    oidc:
+      cors:
+        allowed_origins:
+          - https://rdp.x.tapeline.dev
+          - https://matrix.x.tapeline.dev
+      clients:
+        - client_id: termix
+          client_secret: ''
+          public: false
+          authorization_policy: one_factor
+          redirect_uris:
+            - https://matrix.x.tapeline.dev/api/auth/callback/oidc
+
+domain: id.x.tapeline.dev
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  hosts:
+    - host: id.x.tapeline.dev
+      paths:
+        - path: /
+          pathType: Prefix
