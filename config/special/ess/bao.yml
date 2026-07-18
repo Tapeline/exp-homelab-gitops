@@ -1,0 +1,17 @@
+apiVersion: external-secrets.iov1beta1
+kind: ClusterSecretStore
+metadata:
+  name: vault-backend
+spec:
+  provider:
+    vault:
+      server: "https://secrets.tapeline.dev"
+      path: "secret"
+      version: "v2"
+      auth:
+        kubernetes:
+          mountPath: "kubernetes"
+          role: "eso-role"
+          serviceAccountRef:
+            name: "external-secrets"
+            namespace: "external-secrets"

@@ -21,8 +21,7 @@ domain: id.x.tapeline.dev
 
 ingress:
   enabled: true
-  annotations:
-    kubernetes.io/ingress.class: traefik
+  className: traefik
   hosts:
     - host: id.x.tapeline.dev
       paths:
