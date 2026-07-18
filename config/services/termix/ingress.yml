@@ -2,15 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: termix-ingress
+  namespace: termix
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
 spec:
   rules:
-  - host: rdp.x.tapeline.dev
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: termix-svc
-            port:
-              number: 8080
+    - host: rdp.x.tapeline.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: termix-service
+                port:
+                  number: 8080

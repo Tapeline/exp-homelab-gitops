@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: termix
+  namespace: termix
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: termix
+  template:
+    metadata:
+      labels:
+        app: termix
+    spec:
+      containers:
+        - name: termix
+          image: ghcr.io/lukegus/termix:latest
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "8080"
+            - name: OIDC_CLIENT_ID
+              value: "termix"
+            - name: OIDC_ISSUER_URL
+              value: "https://id.x.tapeline.dev"
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: termix-oidc
+                  key: client_secret
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: termix-data-vol
+              mountPath: /app/data
+      volumes:
+        - name: termix-data-vol
+          persistentVolumeClaim:
+            claimName: termix-data-pvc

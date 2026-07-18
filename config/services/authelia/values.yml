@@ -1,21 +1,52 @@
+secret:
+  existingSecret: "authelia-secrets"
+
 configMap:
   default_redirection_url: https://id.x.tapeline.dev
   authentication_backend:
     file:
       path: /config/users_database.yml
+  storage:
+    encryption_key: '{{ `{{ secret "/secrets/storage_enc" }}` }}'
+    local:
+      path: /config/db.sqlite3
+  jwt_secret: '{{ `{{ secret "/secrets/jwt_secret" }}` }}'
+  notifier:
+    disable_startup_check: false
+    filesystem:
+      filename: "/config/notifications.txt"
+  access_control:
+    default_policy: deny
+    rules:
+      - domain: "rdp.x.tapeline.dev"
+        policy: one_factor
+      - domain: "matrix.x.tapeline.dev"
+        policy: one_factor
   identity_providers:
     oidc:
-      cors:
-        allowed_origins:
-          - https://rdp.x.tapeline.dev
-          - https://matrix.x.tapeline.dev
+      hmac_secret: '{{ `{{ secret "/secrets/hmac_secret" }}` }}'
+      jwks:
+        - algorithm: "RS256"
+          use: "sig"
+          key: "{{ `{{ secret \"/secrets/jwk_private\" | indent 10 }}` }}\n"
+
       clients:
         - client_id: termix
-          client_secret: ''
+          client_name: Termix
+          client_secret: '{{ `{{ secret "/secrets/termix_hash" }}` }}'
           public: false
           authorization_policy: one_factor
           redirect_uris:
             - https://matrix.x.tapeline.dev/api/auth/callback/oidc
+          scopes:
+            - openid
+            - profile
+            - email
+          response_types:
+            - "id_token"
+          grant_types:
+            - "implicit"
+          token_endpoint_auth_method: "client_secret_basic"
 
 domain: id.x.tapeline.dev
 
